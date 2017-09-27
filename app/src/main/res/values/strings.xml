@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">TrustMe</string>
+
+    <string name="login_heading">Login</string>
+    <string name="email_hint">E-mail address</string>
+    <string name="password_hint">Password</string>
+    <string name="main_button_login">Login Now</string>
+    <string name="button_forgot_password">Don\'t you remember your password?</string>
+    <string name="divider_or">Or</string>
+    <string name="button_google_login">Sign in with Google</string>
+    <string name="button_sigh_up">Don\'t have an account yet? Sign Up</string>
+
 </resources>
