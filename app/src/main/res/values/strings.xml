@@ -15,5 +15,11 @@
     <string name="button_sign_up">Sign Up</string>
     <string name="button_already_registered">Do you have an account? Login</string>
     <string name="already_have_account">Do you have an account? Login</string>
+    <string name="heading_forgot_password">Forgot password?</string>
+    <string name="sub_haeding_forgot_password">Give us your email, we\'ll reset that up</string>
+    <string name="error_enter_your_name">Enter your name</string>
+    <string name="error_enter_your_city">Enter your city</string>
+    <string name="button_reset_password">Reset Password</string>
+    <string name="button_sign_not_registered">Sign me up instead</string>
 
 </resources>
