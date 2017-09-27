@@ -9,5 +9,11 @@
     <string name="divider_or">Or</string>
     <string name="button_google_login">Sign in with Google</string>
     <string name="button_sigh_up">Don\'t have an account yet? Sign Up</string>
+    <string name="heading_sign_up">Create an account</string>
+    <string name="user_name_hint">Name</string>
+    <string name="user_city_hint">City</string>
+    <string name="button_sign_up">Sign Up</string>
+    <string name="button_already_registered">Do you have an account? Login</string>
+    <string name="already_have_account">Do you have an account? Login</string>
 
 </resources>
