@@ -17,9 +17,20 @@
     <string name="already_have_account">Do you have an account? Login</string>
     <string name="heading_forgot_password">Forgot password?</string>
     <string name="sub_haeding_forgot_password">Give us your email, we\'ll reset that up</string>
-    <string name="error_enter_your_name">Enter your name</string>
-    <string name="error_enter_your_city">Enter your city</string>
     <string name="button_reset_password">Reset Password</string>
     <string name="button_sign_not_registered">Sign me up instead</string>
+    <string name="toast_password_reset_instruction_sent">Password reset instructions sent to your registered email</string>
+    <string name="error_email_not_registered">Please check your email. Looks like you\'re not registered with us</string>
+    <string name="error_enter_your_name">Enter your name</string>
+    <string name="error_enter_your_city">Enter your city</string>
+    <string name="error_password_less_than_six_character_long">Password must be at least 6 characters long</string>
+    <string name="error_enter_valid_email">Enter a valid email</string>
+    <string name="check_internet_connectivity">Check internet connectivity</string>
+    <string name="account_created_now_verify_it">Account created successfully. Now go to your mailbox and verify it.</string>
+    <string name="toast_problem_creating_account">Problem creating an account</string>
+
+    <string name="toast_authentication_failed">Authentication failed. Please check your email or passowrd</string>
+    <string name="create_account_to_save_routes">To enable saving routes with us, please sigh up using Email !</string>
+    <string name="toast_login_failed">Login Failed</string>
 
 </resources>
