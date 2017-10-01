@@ -1,10 +1,12 @@
 package com.enpassio.trustme;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,9 +27,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -181,6 +190,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //If signin
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+
+
             //Calling a new function to handle signin
             handleSignInResult(result);
         }
@@ -192,6 +203,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (result.isSuccess()) {
             //Getting google account
             GoogleSignInAccount acct = result.getSignInAccount();
+            String personName = acct.getDisplayName();
+            String personGivenName = acct.getGivenName();
+            String personFamilyName = acct.getFamilyName();
+            String personEmail = acct.getEmail();
+            String personId = acct.getId();
+            Uri personPhoto = acct.getPhotoUrl();
+            Log.v("my_tag", "personName is: " + personName);
+            Log.v("my_tag", "personGivenName is: " + personGivenName);
+            Log.v("my_tag", "personFamilyName is: " + personFamilyName);
+            Log.v("my_tag", "personEmail is: " + personEmail);
+            Log.v("my_tag", "personId is: " + personId);
+            Log.v("my_tag", "personPhoto is: " + personPhoto);
+            Log.v("my_tag", "personPhoto is: " + acct);
+            try {
+                run();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
             Toast.makeText(LoginActivity.this, getResources().getString(R.string.create_account_to_save_routes), Toast.LENGTH_LONG).show();
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
@@ -204,6 +235,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    void run() throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        String requestFor = "person.addresses,person.ageRanges,person.biographies,person.birthdays,person.braggingRights,person.coverPhotos,person.emailAddresses,person.events,person.genders,person.imClients,person.interests,person.locales,person.memberships,person.metadata,person.names,person.nicknames,person.occupations,person.organizations,person.phoneNumbers,person.photos,person.relations,person.relationshipInterests,person.relationshipStatuses,person.residences,person.skills,person.taglines,person.urls";
+
+        String url = "https://people.googleapis.com/v1/people/117564423427456797983?requestMask.includeField=" + requestFor + "&key=AIzaSyCKLmb7IjJc981itGdoCljydm73cBaUpkE";
+
+        //String url = "https://people.googleapis.com/v1/people/117564423427456797983&key=AIzaSyCKLmb7IjJc981itGdoCljydm73cBaUpkE";
+        Uri baseUri = Uri.parse(url);
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        Request request = new Request.Builder()
+                .url(uriBuilder.toString())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                String jsonData = response.body().string();
+
+                Log.v("my_tag", "jsonData is: " + jsonData.toString());
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+        });
 
     }
 }
