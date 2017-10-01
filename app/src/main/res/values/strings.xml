@@ -32,5 +32,6 @@
     <string name="toast_authentication_failed">Authentication failed. Please check your email or passowrd</string>
     <string name="create_account_to_save_routes">To enable saving routes with us, please sigh up using Email !</string>
     <string name="toast_login_failed">Login Failed</string>
+    <string name="permissionGranted">permissionGranted</string>
 
 </resources>
