@@ -15,7 +15,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -27,18 +29,20 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
-
     public static final int MULTIPLE_PERMISSIONS = 10;
     GoogleApiClient googleApiClient;
     String[] permissions = new String[]{
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION};
+    FirebaseAuth mAuth;
+    private GoogleApiClient mGoogleApiClient;
     private boolean permissionGranted;
 
     @Override
@@ -46,7 +50,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getUsersLocation();
-
+        mAuth = FirebaseAuth.getInstance();
+        mGoogleApiClient = new GoogleApiClient.Builder(getApplicationContext()) //Use app context to prevent leaks using activity
+                //.enableAutoManage(this /* FragmentActivity */, connectionFailedListener)
+                .addApi(Auth.GOOGLE_SIGN_IN_API)
+                .build();
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         boolean permissionGranted = sharedPref.getBoolean(getString(R.string.permissionGranted), false);
         if (permissionGranted) {
@@ -61,6 +69,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (checkPermissions()) {
             //  permissions  granted.
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    public void signOut(View view) {
+        mAuth.signOut();
+        if (mGoogleApiClient.isConnected()) {
+            Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+            mGoogleApiClient.disconnect();
+        }
+        Intent signoutIntent = new Intent(this, LoginActivity.class);
+        startActivity(signoutIntent);
+        finish();
     }
 
     private boolean checkPermissions() {

@@ -24,6 +24,10 @@ public class UserProfile implements Parcelable {
     private String usersCity;
     private String usersEmail;
     private String usersGender;
+    private String userProfileImageUrl;
+    private String userOrganization;
+    private String userGoogleProfileUrl;
+    private String userGoogleProfileCoverPhotoUrl;
 
     public UserProfile(String name, String city, String gender, String email) {
         usersName = name;
@@ -32,11 +36,26 @@ public class UserProfile implements Parcelable {
         usersEmail = email;
     }
 
+    public UserProfile(String name, String city, String gender, String email, String profileImageUrl, String organization, String googleProfileUrl, String coverPhotoUrl) {
+        usersName = name;
+        usersCity = city;
+        usersGender = gender;
+        usersEmail = email;
+        userProfileImageUrl = profileImageUrl;
+        userOrganization = organization;
+        userGoogleProfileUrl = googleProfileUrl;
+        userGoogleProfileCoverPhotoUrl = coverPhotoUrl;
+    }
+
     public UserProfile(Parcel in) {
         usersName = in.readString();
         usersCity = in.readString();
         usersEmail = in.readString();
         usersGender = in.readString();
+        userProfileImageUrl = in.readString();
+        userOrganization = in.readString();
+        userGoogleProfileUrl = in.readString();
+        userGoogleProfileCoverPhotoUrl = in.readString();
     }
 
     public String getUsersName() {
@@ -55,6 +74,22 @@ public class UserProfile implements Parcelable {
         return usersGender;
     }
 
+    public String getUsersProfileImageUrl() {
+        return userProfileImageUrl;
+    }
+
+    public String getUsersOrganization() {
+        return userOrganization;
+    }
+
+    public String getUserGoogleProfileUrl() {
+        return userGoogleProfileUrl;
+    }
+
+    public String getUsersGoogleProfileCoverPhotoUrl() {
+        return userGoogleProfileCoverPhotoUrl;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -66,5 +101,9 @@ public class UserProfile implements Parcelable {
         dest.writeString(usersCity);
         dest.writeString(usersEmail);
         dest.writeString(usersGender);
+        dest.writeString(userProfileImageUrl);
+        dest.writeString(userOrganization);
+        dest.writeString(userGoogleProfileUrl);
+        dest.writeString(userGoogleProfileCoverPhotoUrl);
     }
 }

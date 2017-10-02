@@ -15,21 +15,21 @@
       },
       "oauth_client": [
         {
-          "client_id": "255694754088-83prj5adrjt10feg8c2clqkkp2tbjis6.apps.googleusercontent.com",
+          "client_id": "255694754088-92q2ebmlu5t7aftq1rfabgig5j2ke0jb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.enpassio.trustme",
-            "certificate_hash": "5e25afaac4019511a6b48469d01dce47483e03a6"
+            "certificate_hash": "42a3c67ef41f70a84c4d7e5022e92026101e586a"
           }
         },
         {
-          "client_id": "255694754088-0mh4jjoan5lnvrhhdoafqr7j4hsc1lcp.apps.googleusercontent.com",
+          "client_id": "255694754088-0aq40bg6kleqp1dbvav1nqa02ersm73p.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD4DGFaqq5gaSvmrtDZ9ewVi2bv38hwUBo"
+          "current_key": "AIzaSyC35ZetOmOrz2LN038ydsGb_SQXrYnM9qA"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "255694754088-0mh4jjoan5lnvrhhdoafqr7j4hsc1lcp.apps.googleusercontent.com",
+              "client_id": "255694754088-0aq40bg6kleqp1dbvav1nqa02ersm73p.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

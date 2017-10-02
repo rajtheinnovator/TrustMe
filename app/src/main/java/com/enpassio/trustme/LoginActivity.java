@@ -6,28 +6,35 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.enpassio.trustme.model.Constants;
+import com.enpassio.trustme.model.GoogleUserProfile;
+import com.enpassio.trustme.model.UserProfile;
 import com.enpassio.trustme.utils.InternetConnectivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,7 +45,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     @BindView(R.id.edit_text_email)
     EditText userEmailEditText;
@@ -55,24 +62,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @BindView(R.id.button_forgot_password)
     Button forgotPassword;
 
+    @BindView(R.id.google_sign_in)
+    SignInButton googleSignIn;
+    //what user data we want to get for users signing in using Google
+    String requestFor;
+    ArrayList<String> requestForArrayList;
     private FirebaseAuth mAuth;
-
     private String email;
     private String password;
     private String name;
     private String city;
     private String gender;
     private FirebaseDatabase mFirebaseDatabase;
-
+    private DatabaseReference mDatabaseReference;
     //Signin button
     private LinearLayout googleSignInButton;
-
     //Signing Options
     private GoogleSignInOptions gso;
-
     //google api client
     private GoogleApiClient mGoogleApiClient;
-
     //Signin constant to check the activity result
     private int RC_SIGN_IN = 100;
 
@@ -83,6 +91,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         ButterKnife.bind(this);
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mFirebaseDatabase.getReference().child("userProfile");
+
+        requestForArrayList = Constants.getRequestForArrayList();
+
+        //initialize request to get a clean request string
+        requestFor = "";
+        for (int i = 0; i < requestForArrayList.size(); i++) {
+            if (!(i == requestForArrayList.size() - 1)) {
+                requestFor += "person." + requestForArrayList.get(i) + ",";
+            } else
+                requestFor += "person." + requestForArrayList.get(i); //if it's the last item, don't end up with a comma
+        }
 
         if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -98,10 +118,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-
-        googleSignInButton = (LinearLayout) findViewById(R.id.google_login_container);
-        googleSignInButton.setOnClickListener(this);
-
     }
 
     @OnClick(R.id.button_sign_in)
@@ -142,7 +158,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 });
     }
 
-    private void checkIfEmailVerified() {
+    public void checkIfEmailVerified() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user.isEmailVerified()) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -167,13 +183,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         finish();
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.google_login_container:
-                signIn();
-                break;
-        }
+    @OnClick(R.id.google_sign_in)
+    public void signInWithGoogle() {
+        signIn();
     }
 
     //This function will option signing intent
@@ -190,8 +202,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //If signin
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-
-
             //Calling a new function to handle signin
             handleSignInResult(result);
         }
@@ -209,21 +219,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             String personEmail = acct.getEmail();
             String personId = acct.getId();
             Uri personPhoto = acct.getPhotoUrl();
-            Log.v("my_tag", "personName is: " + personName);
-            Log.v("my_tag", "personGivenName is: " + personGivenName);
-            Log.v("my_tag", "personFamilyName is: " + personFamilyName);
-            Log.v("my_tag", "personEmail is: " + personEmail);
-            Log.v("my_tag", "personId is: " + personId);
-            Log.v("my_tag", "personPhoto is: " + personPhoto);
-            Log.v("my_tag", "personPhoto is: " + acct);
+
             try {
-                run();
+                run(personName, personEmail, personId);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
-            Toast.makeText(LoginActivity.this, getResources().getString(R.string.create_account_to_save_routes), Toast.LENGTH_LONG).show();
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
 
@@ -238,20 +239,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    void run() throws IOException {
-        OkHttpClient client = new OkHttpClient();
+    void run(final String name, final String email, final String userId) throws IOException {
 
-        String requestFor = "person.addresses,person.ageRanges,person.biographies,person.birthdays,person.braggingRights,person.coverPhotos,person.emailAddresses,person.events,person.genders,person.imClients,person.interests,person.locales,person.memberships,person.metadata,person.names,person.nicknames,person.occupations,person.organizations,person.phoneNumbers,person.photos,person.relations,person.relationshipInterests,person.relationshipStatuses,person.residences,person.skills,person.taglines,person.urls";
-
-        String url = "https://people.googleapis.com/v1/people/117564423427456797983?requestMask.includeField=" + requestFor + "&key=AIzaSyCKLmb7IjJc981itGdoCljydm73cBaUpkE";
-
-        //String url = "https://people.googleapis.com/v1/people/117564423427456797983&key=AIzaSyCKLmb7IjJc981itGdoCljydm73cBaUpkE";
-        Uri baseUri = Uri.parse(url);
+        String urlOfRequest = "https://people.googleapis.com/v1/people/" + userId + "?requestMask.includeField=" + requestFor + "&key=AIzaSyCKLmb7IjJc981itGdoCljydm73cBaUpkE";
+        Uri baseUri = Uri.parse(urlOfRequest);
         Uri.Builder uriBuilder = baseUri.buildUpon();
         Request request = new Request.Builder()
                 .url(uriBuilder.toString())
                 .build();
-
+        OkHttpClient client = new OkHttpClient();
         client.newCall(request).enqueue(new Callback() {
 
             @Override
@@ -259,7 +255,47 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 String jsonData = response.body().string();
 
-                Log.v("my_tag", "jsonData is: " + jsonData.toString());
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                GoogleUserProfile googleUserProfile = gson.fromJson(jsonData, GoogleUserProfile.class);
+                List<GoogleUserProfile.Name> names = googleUserProfile.getName();
+                List<GoogleUserProfile.Photos> photoses = googleUserProfile.getPhotos();
+                List<GoogleUserProfile.Genders> genderses = googleUserProfile.getGender();
+                List<GoogleUserProfile.Residence> residences = googleUserProfile.getResidences();
+                List<GoogleUserProfile.Organization> organizations = googleUserProfile.getOrganizationses();
+                List<GoogleUserProfile.UserGoogleProfile> userGoogleProfiles = googleUserProfile.getUserGoogleProfiles();
+                List<GoogleUserProfile.CoverPhoto> coverPhotos = googleUserProfile.getUserProfileCoverPhoto();
+
+                String city = "unknown";
+                if (residences != null) {
+                    city = residences.get(0).getUsersresidence();
+                }
+                String gender = "unknown";
+                if (genderses != null) {
+                    gender = genderses.get(0).getUserGender();
+                }
+
+                String profileImageUrl = "";
+                if (photoses != null) {
+                    profileImageUrl = photoses.get(0).getProfilePicUrl();
+                }
+                String organization = "";
+                if (organizations != null) {
+                    organization = organizations.get(0).getUsersOrganization();
+                }
+                String userGoogleProfileUrl = "";
+                if (userGoogleProfiles != null) {
+                    userGoogleProfileUrl = userGoogleProfiles.get(0).getUserGoogleProfileUrl();
+                }
+                String coverPhotoUrl = "";
+                if (coverPhotos != null) {
+                    coverPhotoUrl = coverPhotos.get(0).getUserGoogleProfileCoverPhotoUrl();
+                }
+
+                DatabaseReference mDatabase;
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+
+                UserProfile user = new UserProfile(name, city, gender, email, profileImageUrl, organization, userGoogleProfileUrl, coverPhotoUrl);
+                mDatabase.child("userProfile").child(userId).setValue(user);
             }
 
             @Override
@@ -269,4 +305,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
 
     }
+
 }
