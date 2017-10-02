@@ -8,7 +8,8 @@ import java.util.ArrayList;
 
 public final class Constants {
 
-    public static ArrayList<String> requestForArrayList = new ArrayList<String>();
+    public static final ArrayList<String> requestForArrayList = new ArrayList<String>();
+    public static final String PEOPLE_API_KEY = "AIzaSyCKLmb7IjJc981itGdoCljydm73cBaUpkE";
 
     public final static ArrayList<String> getRequestForArrayList() {
         requestForArrayList.add("addresses");

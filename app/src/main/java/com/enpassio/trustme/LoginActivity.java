@@ -241,7 +241,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     void run(final String name, final String email, final String userId) throws IOException {
 
-        String urlOfRequest = "https://people.googleapis.com/v1/people/" + userId + "?requestMask.includeField=" + requestFor + "&key=AIzaSyCKLmb7IjJc981itGdoCljydm73cBaUpkE";
+        String urlOfRequest = "https://people.googleapis.com/v1/people/" + userId + "?requestMask.includeField=" + requestFor + "&key=" + Constants.PEOPLE_API_KEY;
         Uri baseUri = Uri.parse(urlOfRequest);
         Uri.Builder uriBuilder = baseUri.buildUpon();
         Request request = new Request.Builder()
