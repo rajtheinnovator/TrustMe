@@ -32,6 +32,10 @@
             android:name=".ResetPasswordActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".MainActivity" />
+
+        <service
+            android:name=".utils.GeoFenceTransitionIntentService"
+            android:exported="false" />
     </application>
 
 </manifest>

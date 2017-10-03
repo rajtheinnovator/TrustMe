@@ -11,9 +11,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.enpassio.trustme.model.Constants;
 import com.enpassio.trustme.model.GoogleUserProfile;
 import com.enpassio.trustme.model.UserProfile;
+import com.enpassio.trustme.utils.Constants;
 import com.enpassio.trustme.utils.InternetConnectivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
