@@ -28,6 +28,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -176,19 +177,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     public void onResult(Status status) {
-        Log.v("mmmmmm", "onResult called");
         if (status.isSuccess()) {
             Toast.makeText(
                     this,
                     "Geofences Added",
                     Toast.LENGTH_SHORT
             ).show();
-            Log.v("mmmmmm", "onResult isSuccess is: ");
         } else {
             // Get the status code for the error and log it using a user-friendly message.
             String errorMessage = GeofenceErrorMessages.getErrorString(this,
                     status.getStatusCode());
-            Log.v("mmmmmm", "onResult error is: " + errorMessage);
         }
     }
 
@@ -257,5 +255,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
         builder.addGeofences(mGeofenceList);
         return builder.build();
+    }
+
+    private void createCircle() {
+        CircleOptions circle = new CircleOptions()
+                .center(new LatLng(12.923916, 77.613462))
+                .radius(55);
+
+        float[] distance = new float[2];
+
+//        Location.distanceBetween( marker.getPosition().latitude, marker.getPosition().longitude,
+//                circle.getCenter().latitude, circle.getCenter().longitude, distance);
+
+        if (distance[0] > circle.getRadius()) {
+            Toast.makeText(getBaseContext(), "Outside", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getBaseContext(), "Inside", Toast.LENGTH_LONG).show();
+        }
     }
 }

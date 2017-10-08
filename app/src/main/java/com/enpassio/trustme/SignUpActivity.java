@@ -67,7 +67,6 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         ButterKnife.bind(this);
         mAuth = FirebaseAuth.getInstance();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
         genderArray = new ArrayList<>();
         genderArray.add("Female");
         genderArray.add("Male");
